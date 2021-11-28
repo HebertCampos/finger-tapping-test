@@ -30,6 +30,9 @@ while True:
                 cx,cy = int(lm.x*w), int(lm.y*h)
                 # print(id, cx,cy)
                 
+                if id == 0 or id ==4 or id == 8:
+                    cv2.circle(img, (cx,cy), 10, (0,0,255), cv2.FILLED)
+                
                 fingertips(0)
                 fingertips(4)
                 fingertips(8)
