@@ -14,7 +14,12 @@ while True:
     
     imgBGR = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     results = hands.process(imgBGR)
-    print(results.multi_hand_landmarks)
+    # print(results.multi_hand_landmarks)
+    
+    if results.multi_hand_landmarks:
+        for handLms in results.multi_hand_landmarks:
+            mpDraw.draw_landmarks(img, handLms)
+
 
 
     cv2.imshow('img', img)
