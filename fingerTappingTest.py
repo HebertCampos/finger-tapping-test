@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import mediapipe as mp
 import time
+import math
 
 
 def fingertips(idNumber):
@@ -10,6 +11,18 @@ def fingertips(idNumber):
         vr.append(cx)
         vr.append(cy)
         pontos.append(vr)
+        
+def gradient(pt1, pt2):
+    return (pt2[1]-pt1[1])/(pt2[0]-pt1[0])
+        
+def getAngle(pontos):
+    pt1,pt2,pt3 = pontos[-3:]
+    # print(pt1,pt2,pt3)
+    m1 = gradient(pt1, pt2)
+    m2 = gradient(pt1, pt3)
+    angR = math.atan((m2-m1)/(1+(m2*m1)))
+    angD = round(math.degrees(angR))
+    print(angD)
 
 
 cap = cv2.VideoCapture(0)
@@ -46,6 +59,8 @@ while True:
                 pts = pts.reshape((-1,1,2))
                 cv2.polylines(img, [pts], True, (0,0,255), 3)
 
+                if len(pontos) % 3 == 0 and len(pontos) !=0:
+                    getAngle(pontos)    
             
             # mpDraw.draw_landmarks(img, handLms, mpHands.HAND_CONNECTIONS)
 
