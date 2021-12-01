@@ -6,24 +6,24 @@ import math
 
 
 def fingertips(idNumber):
-    vr = []
+    lFinger = []
     if id == idNumber:
-        vr.append(cx)
-        vr.append(cy)
-        pontos.append(vr)
+        lFinger.append(cx)
+        lFinger.append(cy)
+        pointList.append(lFinger)
         
 def gradient(pt1, pt2):
     return (pt2[1]-pt1[1])/(pt2[0]-pt1[0])
         
-def getAngle(pontos):
-    pt1,pt2,pt3 = pontos[-3:]
+def getAngle(pointList):
+    pt1,pt2,pt3 = pointList[-3:]
     # print(pt1,pt2,pt3)
     m1 = gradient(pt1, pt2)
     m2 = gradient(pt1, pt3)
     angR = math.atan((m2-m1)/(1+(m2*m1)))
     angD = abs(round(math.degrees(angR)))
     # print(angD)
-    cv2.putText(img, f'{int(angD)}', (pontos[0]), cv2.FONT_HERSHEY_COMPLEX, 1, (255,0,0),2)
+    cv2.putText(img, f'{int(angD)}', (pointList[0]), cv2.FONT_HERSHEY_COMPLEX, 1, (255,0,0),2)
 
 
 cap = cv2.VideoCapture(0)
@@ -43,7 +43,7 @@ while True:
     
     if results.multi_hand_landmarks:
         for handLms in results.multi_hand_landmarks:
-            pontos = []
+            pointList = []
             for id, lm in enumerate(handLms.landmark):
                 h,w,c = img.shape
                 cx,cy = int(lm.x*w), int(lm.y*h)
@@ -56,12 +56,12 @@ while True:
                 fingertips(4)
                 fingertips(8)
 
-                pts = np.array(pontos, np.int32)
+                pts = np.array(pointList, np.int32)
                 pts = pts.reshape((-1,1,2))
                 cv2.polylines(img, [pts], True, (0,0,255), 3)
 
-                if len(pontos) % 3 == 0 and len(pontos) !=0:
-                    getAngle(pontos)    
+                if len(pointList) % 3 == 0 and len(pointList) !=0:
+                    getAngle(pointList)    
                     
             
             # mpDraw.draw_landmarks(img, handLms, mpHands.HAND_CONNECTIONS)
