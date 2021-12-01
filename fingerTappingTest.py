@@ -21,8 +21,9 @@ def getAngle(pontos):
     m1 = gradient(pt1, pt2)
     m2 = gradient(pt1, pt3)
     angR = math.atan((m2-m1)/(1+(m2*m1)))
-    angD = round(math.degrees(angR))
-    print(angD)
+    angD = abs(round(math.degrees(angR)))
+    # print(angD)
+    cv2.putText(img, f'{int(angD)}', (pontos[0]), cv2.FONT_HERSHEY_COMPLEX, 1, (255,0,0),2)
 
 
 cap = cv2.VideoCapture(0)
@@ -61,6 +62,7 @@ while True:
 
                 if len(pontos) % 3 == 0 and len(pontos) !=0:
                     getAngle(pontos)    
+                    
             
             # mpDraw.draw_landmarks(img, handLms, mpHands.HAND_CONNECTIONS)
 
