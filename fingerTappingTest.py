@@ -14,6 +14,16 @@ def fingertips(idNumber):
         
 def gradient(pt1, pt2):
     return (pt2[1]-pt1[1])/(pt2[0]-pt1[0])
+
+def temp(ini, ang):
+    tbs = []
+    while True:
+        end = time.time()
+        temp = end - ini
+        break
+    tbs.append(temp)
+    tbs.append(ang)
+    return tbs
         
 def getAngle(pointList):
     pt1,pt2,pt3 = pointList[-3:]
@@ -23,7 +33,9 @@ def getAngle(pointList):
     angR = math.atan((m2-m1)/(1+(m2*m1)))
     angD = abs(round(math.degrees(angR)))
     # print(angD)
-    cv2.putText(img, f'{int(angD)}', (pointList[0]), cv2.FONT_HERSHEY_COMPLEX, 1, (255,0,0),2)
+    # cv2.putText(img, f'{int(angD)}', (pointList[0]), cv2.FONT_HERSHEY_COMPLEX, 1, (255,0,0),2)
+    return angD
+
 
 
 cap = cv2.VideoCapture(0)
@@ -33,13 +45,17 @@ hands = mpHands.Hands()
 mpDraw = mp.solutions.drawing_utils
 
 pTime = 0
+ini = time.time()
 
+
+tb = []
 while True:
     ret, img = cap.read()
     
     imgBGR = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     results = hands.process(imgBGR)
     # print(results.multi_hand_landmarks)
+    
     
     if results.multi_hand_landmarks:
         for handLms in results.multi_hand_landmarks:
@@ -60,8 +76,14 @@ while True:
                 pts = pts.reshape((-1,1,2))
                 cv2.polylines(img, [pts], True, (0,0,255), 3)
 
+                
                 if len(pointList) % 3 == 0 and len(pointList) !=0:
-                    getAngle(pointList)    
+                    angD = getAngle(pointList)
+                    cv2.putText(img, f'{int(angD)}', (pointList[0]), cv2.FONT_HERSHEY_COMPLEX, 1, (255,0,0),2)
+                    # t = temp(ini, angD) 
+                    tb.append(temp(ini, angD))
+                    
+                     
                     
             
             # mpDraw.draw_landmarks(img, handLms, mpHands.HAND_CONNECTIONS)
@@ -70,8 +92,11 @@ while True:
     fps = 1/(cTime-pTime)
     pTime = cTime
     cv2.putText(img, f'FPS: {int(fps)}', (40,50), cv2.FONT_HERSHEY_COMPLEX, 1, (255,0,0),3)
+    
 
+    print(tb)
     cv2.imshow('img', img)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-    
+
+
