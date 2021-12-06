@@ -36,8 +36,6 @@ def getAngle(pointList):
     # cv2.putText(img, f'{int(angD)}', (pointList[0]), cv2.FONT_HERSHEY_COMPLEX, 1, (255,0,0),2)
     return angD
 
-
-
 cap = cv2.VideoCapture(0)
 
 mpHands = mp.solutions.hands
@@ -47,17 +45,18 @@ mpDraw = mp.solutions.drawing_utils
 pTime = 0
 ini = time.time()
 
-
 tb = []
-while True:
+
+tempoExc = 0
+
+while tempoExc<=1500:
     ret, img = cap.read()
     
     imgBGR = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     results = hands.process(imgBGR)
     # print(results.multi_hand_landmarks)
     
-    
-    if results.multi_hand_landmarks:
+    if results.multi_hand_landmarks and tempoExc<=1500:
         for handLms in results.multi_hand_landmarks:
             pointList = []
             for id, lm in enumerate(handLms.landmark):
@@ -75,17 +74,14 @@ while True:
                 pts = np.array(pointList, np.int32)
                 pts = pts.reshape((-1,1,2))
                 cv2.polylines(img, [pts], True, (0,0,255), 3)
-
                 
                 if len(pointList) % 3 == 0 and len(pointList) !=0:
                     angD = getAngle(pointList)
                     cv2.putText(img, f'{int(angD)}', (pointList[0]), cv2.FONT_HERSHEY_COMPLEX, 1, (255,0,0),2)
                     # t = temp(ini, angD) 
                     tb.append(temp(ini, angD))
-                    
-                     
-                    
-            
+                    tempoExc = tempoExc+1
+
             # mpDraw.draw_landmarks(img, handLms, mpHands.HAND_CONNECTIONS)
 
     cTime = time.time()
@@ -93,10 +89,8 @@ while True:
     pTime = cTime
     cv2.putText(img, f'FPS: {int(fps)}', (40,50), cv2.FONT_HERSHEY_COMPLEX, 1, (255,0,0),3)
     
-
-    print(tb)
     cv2.imshow('img', img)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+    cv2.waitKey(1)
+cv2.destroyAllWindows()
 
-
+print(tb)
